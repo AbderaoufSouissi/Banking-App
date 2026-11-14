@@ -4,16 +4,15 @@ import com.ars.accountservice.domain.Account;
 import com.ars.accountservice.domain.AccountStatus;
 import com.ars.accountservice.domain.Transaction;
 import com.ars.accountservice.domain.TransactionType;
+import com.ars.accountservice.exception.AccountNotFoundException;
 import com.ars.accountservice.repository.AccountRepository;
 import com.ars.accountservice.repository.TransactionRepository;
 import com.ars.accountservice.request.CreateAccountRequest;
 import com.ars.accountservice.service.AccountService;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-
 import static java.time.LocalDateTime.now;
 
 @Transactional
@@ -49,5 +48,28 @@ public class AccountServiceImpl implements AccountService {
 
 
         return createdAccount;
+    }
+
+    @Override
+    public Account getAccountById(String id) {
+        return accountRepository.findById(id).orElseThrow(
+                () -> new AccountNotFoundException("Account with id: " + id + " not found")
+        );
+    }
+
+    @Override
+    public Transaction credit(String accountId, @Positive(message = "amount must be greater than zero") double amount) {
+        Account account = getAccountById(accountId);
+        account.setBalance(account.getBalance() + amount);
+        accountRepository.save(account);
+
+        var transaction = Transaction.builder()
+                .dateTime(now())
+                .amount(account.getBalance())
+                .type(TransactionType.CREDIT)
+                .account(account)
+                .build();
+
+        return transactionRepository.save(transaction);
     }
 }
