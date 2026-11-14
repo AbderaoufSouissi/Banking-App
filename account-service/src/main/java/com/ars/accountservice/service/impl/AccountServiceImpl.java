@@ -9,6 +9,7 @@ import com.ars.accountservice.repository.AccountRepository;
 import com.ars.accountservice.repository.TransactionRepository;
 import com.ars.accountservice.request.CreateAccountRequest;
 import com.ars.accountservice.service.AccountService;
+import jakarta.validation.Validated;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static java.time.LocalDateTime.now;
 
 @Transactional
+@Validated
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -51,6 +53,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Account getAccountById(String id) {
         return accountRepository.findById(id).orElseThrow(
                 () -> new AccountNotFoundException("Account with id: " + id + " not found")
