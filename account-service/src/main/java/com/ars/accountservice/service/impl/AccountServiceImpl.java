@@ -5,19 +5,21 @@ import com.ars.accountservice.domain.AccountStatus;
 import com.ars.accountservice.domain.Transaction;
 import com.ars.accountservice.domain.TransactionType;
 import com.ars.accountservice.exception.AccountNotFoundException;
+import com.ars.accountservice.exception.UnsufficientBalanceException;
 import com.ars.accountservice.repository.AccountRepository;
 import com.ars.accountservice.repository.TransactionRepository;
 import com.ars.accountservice.request.CreateAccountRequest;
 import com.ars.accountservice.service.AccountService;
-import jakarta.validation.Validated;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 import static java.time.LocalDateTime.now;
 
 @Transactional
-@Validated
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -68,11 +70,35 @@ public class AccountServiceImpl implements AccountService {
 
         var transaction = Transaction.builder()
                 .dateTime(now())
-                .amount(account.getBalance())
+                .amount(amount)
                 .type(TransactionType.CREDIT)
                 .account(account)
                 .build();
 
         return transactionRepository.save(transaction);
+    }
+
+
+    @Override
+    public Transaction debit(String accountId, @Positive(message = "amount must be greater than zero") double amount) {
+        Account account = getAccountById(accountId);
+        double currentBalance = account.getBalance();
+        if (currentBalance < amount)  throw new UnsufficientBalanceException("unsufficient balance");
+        account.setBalance(account.getBalance() - amount);
+        accountRepository.save(account);
+
+        var transaction = Transaction.builder()
+                .dateTime(now())
+                .amount(amount)
+                .type(TransactionType.DEBIT)
+                .account(account)
+                .build();
+
+        return transactionRepository.save(transaction);
+    }
+
+    @Override
+    public List<Account> getAllAccounts() {
+        return accountRepository.findAll();
     }
 }
