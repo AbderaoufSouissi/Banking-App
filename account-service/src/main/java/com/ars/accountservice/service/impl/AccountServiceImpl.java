@@ -11,7 +11,6 @@ import com.ars.accountservice.repository.TransactionRepository;
 import com.ars.accountservice.request.CreateAccountRequest;
 import com.ars.accountservice.service.AccountService;
 import jakarta.validation.constraints.Positive;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +20,15 @@ import static java.time.LocalDateTime.now;
 
 @Transactional
 @Service
-@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
+    public AccountServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+        this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
+    }
 
 
     @Override
@@ -83,7 +85,7 @@ public class AccountServiceImpl implements AccountService {
     public Transaction debit(String accountId, @Positive(message = "amount must be greater than zero") double amount) {
         Account account = getAccountById(accountId);
         double currentBalance = account.getBalance();
-        if (currentBalance < amount)  throw new UnsufficientBalanceException("unsufficient balance");
+        if (currentBalance < amount) throw new UnsufficientBalanceException("unsufficient balance");
         account.setBalance(account.getBalance() - amount);
         accountRepository.save(account);
 
