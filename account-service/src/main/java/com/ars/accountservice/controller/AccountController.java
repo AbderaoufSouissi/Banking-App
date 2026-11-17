@@ -1,9 +1,9 @@
 package com.ars.accountservice.controller;
 
-import com.ars.accountservice.domain.Account;
-import com.ars.accountservice.domain.Transaction;
 import com.ars.accountservice.request.CreateAccountRequest;
 import com.ars.accountservice.request.CreateTransactionRequest;
+import com.ars.accountservice.response.AccountResponse;
+import com.ars.accountservice.response.TransactionResponse;
 import com.ars.accountservice.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,27 +23,27 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<Account> createAccount(@RequestBody CreateAccountRequest request) {
+    public ResponseEntity<AccountResponse> createAccount(@RequestBody CreateAccountRequest request) {
         return new ResponseEntity<>(accountService.createAccount(request), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Account> getAccountById(@PathVariable String id) {
+    public ResponseEntity<AccountResponse> getAccountById(@PathVariable String id) {
         return new ResponseEntity<>(accountService.getAccountById(id), HttpStatus.OK);
     }
 
     @PostMapping("/credit/{accountId}")
-    public ResponseEntity<Transaction> credit(@PathVariable String accountId, @RequestBody @Valid CreateTransactionRequest request) {
+    public ResponseEntity<TransactionResponse> credit(@PathVariable String accountId, @RequestBody @Valid CreateTransactionRequest request) {
         return new ResponseEntity<>(accountService.credit(accountId, request), HttpStatus.OK);
 
     }
 
     @PostMapping("/debit/{accountId}")
-    public ResponseEntity<Transaction> debit(@PathVariable String accountId, @RequestBody @Valid CreateTransactionRequest request) {
+    public ResponseEntity<TransactionResponse> debit(@PathVariable String accountId, @RequestBody @Valid CreateTransactionRequest request) {
         return new ResponseEntity<>(accountService.debit(accountId, request), HttpStatus.OK);
     }
 
-    public ResponseEntity<List<Account>> getAllAccounts() {
+    public ResponseEntity<List<AccountResponse>> getAllAccounts() {
         return new ResponseEntity<>(accountService.getAllAccounts(), HttpStatus.OK);
     }
 
