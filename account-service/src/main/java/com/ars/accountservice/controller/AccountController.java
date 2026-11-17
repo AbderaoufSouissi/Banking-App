@@ -43,6 +43,7 @@ public class AccountController {
         return new ResponseEntity<>(accountService.debit(accountId, request), HttpStatus.OK);
     }
 
+    @GetMapping
     public ResponseEntity<List<AccountResponse>> getAllAccounts() {
         return new ResponseEntity<>(accountService.getAllAccounts(), HttpStatus.OK);
     }

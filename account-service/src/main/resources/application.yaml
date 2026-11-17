@@ -16,3 +16,8 @@ spring:
       enabled: false
     discovery:
       enabled: false
+  ai:
+    mcp:
+      server:
+        protocol: streamable
+        name: banking-mcp-server
