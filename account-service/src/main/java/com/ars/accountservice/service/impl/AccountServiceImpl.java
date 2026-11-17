@@ -9,8 +9,8 @@ import com.ars.accountservice.exception.UnsufficientBalanceException;
 import com.ars.accountservice.repository.AccountRepository;
 import com.ars.accountservice.repository.TransactionRepository;
 import com.ars.accountservice.request.CreateAccountRequest;
+import com.ars.accountservice.request.CreateTransactionRequest;
 import com.ars.accountservice.service.AccountService;
-import jakarta.validation.constraints.Positive;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,14 +65,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Transaction credit(String accountId, @Positive(message = "amount must be greater than zero") double amount) {
+    public Transaction credit(String accountId, CreateTransactionRequest request) {
         Account account = getAccountById(accountId);
-        account.setBalance(account.getBalance() + amount);
+        account.setBalance(account.getBalance() + request.amount());
         accountRepository.save(account);
 
         var transaction = Transaction.builder()
                 .dateTime(now())
-                .amount(amount)
+                .amount(request.amount())
                 .type(TransactionType.CREDIT)
                 .account(account)
                 .build();
@@ -82,16 +82,16 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public Transaction debit(String accountId, @Positive(message = "amount must be greater than zero") double amount) {
+    public Transaction debit(String accountId, CreateTransactionRequest request) {
         Account account = getAccountById(accountId);
         double currentBalance = account.getBalance();
-        if (currentBalance < amount) throw new UnsufficientBalanceException("unsufficient balance");
-        account.setBalance(account.getBalance() - amount);
+        if (currentBalance < request.amount()) throw new UnsufficientBalanceException("unsufficient balance");
+        account.setBalance(account.getBalance() - request.amount());
         accountRepository.save(account);
 
         var transaction = Transaction.builder()
                 .dateTime(now())
-                .amount(amount)
+                .amount(request.amount())
                 .type(TransactionType.DEBIT)
                 .account(account)
                 .build();
