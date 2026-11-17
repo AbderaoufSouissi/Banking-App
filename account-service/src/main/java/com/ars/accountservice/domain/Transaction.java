@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -14,6 +15,7 @@ public class Transaction {
     private Long id;
     private LocalDateTime dateTime;
     private double amount;
+    @Enumerated(STRING)
     private TransactionType type;
     @ManyToOne
     @JoinColumn(name = "account_id")
