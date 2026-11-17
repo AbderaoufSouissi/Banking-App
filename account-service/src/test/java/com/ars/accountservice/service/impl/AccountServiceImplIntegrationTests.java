@@ -6,6 +6,7 @@ import com.ars.accountservice.domain.TransactionType;
 import com.ars.accountservice.repository.AccountRepository;
 import com.ars.accountservice.repository.TransactionRepository;
 import com.ars.accountservice.request.CreateAccountRequest;
+import com.ars.accountservice.response.AccountResponse;
 import com.ars.accountservice.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,19 +53,19 @@ class AccountServiceImplIntegrationTests {
     void createAccountPersistsAccountAndInitialCreditTransaction() {
         var request = new CreateAccountRequest(250.00, AccountType.CURRENT_ACCOUNT, "EUR", 42L);
 
-        var account = accountService.createAccount(request);
+        AccountResponse response = accountService.createAccount(request);
 
-        assertThat(account.getId()).isNotBlank();
-        assertThat(account.getBalance()).isEqualTo(250.00);
-        assertThat(account.getType()).isEqualTo(AccountType.CURRENT_ACCOUNT);
-        assertThat(account.getStatus()).isEqualTo(AccountStatus.CREATED);
-        assertThat(account.getCurrency()).isEqualTo("EUR");
-        assertThat(account.getCustomerId()).isEqualTo(42L);
+        assertThat(response.id()).isNotBlank();
+        assertThat(response.balance()).isEqualTo(250.00);
+        assertThat(response.type()).isEqualTo(AccountType.CURRENT_ACCOUNT);
+        assertThat(response.status()).isEqualTo(AccountStatus.CREATED);
+        assertThat(response.currency()).isEqualTo("EUR");
+        assertThat(response.customerId()).isEqualTo(42L);
 
         var transactions = transactionRepository.findAll();
         assertThat(transactions).hasSize(1);
         assertThat(transactions.getFirst().getAmount()).isEqualTo(250.00);
         assertThat(transactions.getFirst().getType()).isEqualTo(TransactionType.CREDIT);
-        assertThat(transactions.getFirst().getAccount().getId()).isEqualTo(account.getId());
+        assertThat(transactions.getFirst().getAccount().getId()).isEqualTo(response.id());
     }
 }
