@@ -1,16 +1,16 @@
 package com.ars.accountservice.service;
 
-import com.ars.accountservice.domain.Account;
-import com.ars.accountservice.domain.Transaction;
 import com.ars.accountservice.request.CreateAccountRequest;
 import com.ars.accountservice.request.CreateTransactionRequest;
+import com.ars.accountservice.response.AccountResponse;
+import com.ars.accountservice.response.TransactionResponse;
 
 import java.util.List;
 
 public interface AccountService {
-    Account createAccount(CreateAccountRequest request);
-    Account getAccountById(String id);
-    Transaction credit(String accountId, CreateTransactionRequest request);
-    Transaction debit(String accountId, CreateTransactionRequest request);
-    List<Account> getAllAccounts();
+    AccountResponse createAccount(CreateAccountRequest request);
+    AccountResponse getAccountById(String id);
+    TransactionResponse credit(String accountId, CreateTransactionRequest request);
+    TransactionResponse debit(String accountId, CreateTransactionRequest request);
+    List<AccountResponse> getAllAccounts();
 }
